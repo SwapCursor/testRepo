@@ -44,6 +44,9 @@ public class PlacesAutocompleteTextView extends AutoCompleteTextView {
     private OnPlaceSelectedListener listener;
 
     @Nullable
+    private AdapterView.OnItemClickListener clickListener;
+
+    @Nullable
     private AutocompleteHistoryManager historyManager;
 
     @NonNull
@@ -144,6 +147,9 @@ public class PlacesAutocompleteTextView extends AutoCompleteTextView {
             public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
                 Place place = adapter.getItem(position);
 
+                if(clickListener != null){
+                    clickListener.onItemClick(parent, view, position, id);
+                }
                 if (listener != null) {
                     listener.onPlaceSelected(place);
                 }
@@ -170,7 +176,7 @@ public class PlacesAutocompleteTextView extends AutoCompleteTextView {
      */
     @Override
     public final void setOnItemClickListener(final AdapterView.OnItemClickListener l) {
-        throw new UnsupportedOperationException("Use set" + OnPlaceSelectedListener.class.getSimpleName() + "() instead");
+        this.clickListener = l;
     }
 
     /**
