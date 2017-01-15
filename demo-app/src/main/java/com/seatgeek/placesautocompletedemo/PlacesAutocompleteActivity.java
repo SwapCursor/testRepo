@@ -3,7 +3,10 @@ package com.seatgeek.placesautocompletedemo;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.seatgeek.placesautocomplete.DetailsCallback;
 import com.seatgeek.placesautocomplete.OnPlaceSelectedListener;
@@ -39,6 +42,16 @@ public class PlacesAutocompleteActivity extends Activity {
 
         setContentView(R.layout.activity_places_autocomplete);
         ButterKnife.inject(this);
+        mAutocomplete.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // OnItemClickListener will fire when user select and address.
+                // Useful if you want immediate action like start a progress dialog
+                // after user select address.
+                Toast.makeText(PlacesAutocompleteActivity.this,
+                        "onItemClick starting progress dialog", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         mAutocomplete.setOnPlaceSelectedListener(new OnPlaceSelectedListener() {
             @Override

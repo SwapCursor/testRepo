@@ -172,7 +172,9 @@ public class PlacesAutocompleteTextView extends AutoCompleteTextView {
     }
 
     /**
-     * DO NOT USE. Prefer {@link #setOnPlaceSelectedListener} instead
+     * OnItemClickListener will fire when user select and address.
+     * Useful if you want immediate action like start a progress dialog
+     * after user select address.
      */
     @Override
     public final void setOnItemClickListener(final AdapterView.OnItemClickListener l) {
