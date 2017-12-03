@@ -1,13 +1,3 @@
-# 2016-10-29
-Added support for onItemClick to do some work before private void showPlaceDetails(Pla.. fires
-
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        showProgressDialog();
-        SettingsManager.hideKeyboard(this);
-
-    }
-
 # android-PlacesAutocompleteTextView
 
 [![Build Status](https://travis-ci.org/seatgeek/android-PlacesAutocompleteTextView.svg)](https://travis-ci.org/seatgeek/android-PlacesAutocompleteTextView) [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-PlacesAutocompleteTextView-green.svg?style=true)](https://android-arsenal.com/details/1/2777)
