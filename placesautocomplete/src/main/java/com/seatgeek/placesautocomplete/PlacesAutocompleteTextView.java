@@ -3,6 +3,7 @@ package com.seatgeek.placesautocomplete;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -10,6 +11,7 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.InflateException;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
@@ -37,26 +39,44 @@ public class PlacesAutocompleteTextView extends AutoCompleteTextView {
     @Nullable
     private AutocompleteResultType resultType;
 
-    @NonNull
     private PlacesApi api;
 
     @Nullable
     private OnPlaceSelectedListener listener;
 
     @Nullable
-    private AdapterView.OnItemClickListener clickListener;
-
-    @Nullable
     private AutocompleteHistoryManager historyManager;
 
-    @NonNull
     private AbstractPlacesAutocompleteAdapter adapter;
 
     @Nullable
     private String languageCode;
 
+    private boolean isClearEnabled;
+
     private boolean completionEnabled = true;
 
+    private boolean justCleared;
+
+    // The image we defined for the clear button
+    public Drawable imgClearButton;
+
+    public interface OnClearListener {
+        void onClear();
+    }
+
+    // if not set otherwise, the default clear listener clears the text in the
+    // text view
+    private OnClearListener defaultClearListener = new OnClearListener() {
+
+        @Override
+        public void onClear() {
+            PlacesAutocompleteTextView et = PlacesAutocompleteTextView.this;
+            et.setText("");
+        }
+    };
+
+    private OnClearListener onClearListener = defaultClearListener;
     /**
      * Creates a new PlacesAutocompleteTextView with the provided API key and the default history file
      */
@@ -110,6 +130,7 @@ public class PlacesAutocompleteTextView extends AutoCompleteTextView {
         String layoutAdapterClass = typedArray.getString(R.styleable.PlacesAutocompleteTextView_pacv_adapterClass);
         String layoutHistoryFile = typedArray.getString(R.styleable.PlacesAutocompleteTextView_pacv_historyFile);
         languageCode = typedArray.getString(R.styleable.PlacesAutocompleteTextView_pacv_languageCode);
+        isClearEnabled = typedArray.getBoolean(R.styleable.PlacesAutocompleteTextView_pacv_clearEnabled, false);
         resultType = AutocompleteResultType.fromEnum(typedArray.getInt(R.styleable.PlacesAutocompleteTextView_pacv_resultType, PlacesApi.DEFAULT_RESULT_TYPE.ordinal()));
         typedArray.recycle();
 
@@ -147,9 +168,6 @@ public class PlacesAutocompleteTextView extends AutoCompleteTextView {
             public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
                 Place place = adapter.getItem(position);
 
-                if(clickListener != null){
-                    clickListener.onItemClick(parent, view, position, id);
-                }
                 if (listener != null) {
                     listener.onPlaceSelected(place);
                 }
@@ -159,8 +177,35 @@ public class PlacesAutocompleteTextView extends AutoCompleteTextView {
                 }
             }
         });
-
+        if(isClearEnabled) {
+            enableClearButton();
+        }
         super.setDropDownBackgroundResource(R.drawable.pacv_popup_background_white);
+    }
+
+    private void enableClearButton(){
+        if(imgClearButton == null)
+            imgClearButton = getResources().getDrawable(R.drawable.ic_clear_black_24dp);
+        // Set the bounds of the clear button
+        this.setCompoundDrawablesWithIntrinsicBounds(null, null, imgClearButton, null);
+
+        // if the clear button is pressed fire up the handler Otherwise do nothing
+        final Drawable finalImgClearButton = imgClearButton;
+        this.setOnTouchListener(new OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                PlacesAutocompleteTextView et = PlacesAutocompleteTextView.this;
+                if (et.getCompoundDrawables()[2] == null)
+                    return false;
+                if (event.getAction() != MotionEvent.ACTION_UP)
+                    return false;
+                if (event.getX() > et.getWidth() - et.getPaddingRight() - finalImgClearButton.getIntrinsicWidth()) {
+                    onClearListener.onClear();
+                    justCleared = true;
+                }
+                return false;
+            }
+        });
     }
 
     /**
@@ -172,13 +217,11 @@ public class PlacesAutocompleteTextView extends AutoCompleteTextView {
     }
 
     /**
-     * OnItemClickListener will fire when user select and address.
-     * Useful if you want immediate action like start a progress dialog
-     * after user select address.
+     * DO NOT USE. Prefer {@link #setOnPlaceSelectedListener} instead
      */
     @Override
     public final void setOnItemClickListener(final AdapterView.OnItemClickListener l) {
-        this.clickListener = l;
+        throw new UnsupportedOperationException("Use set" + OnPlaceSelectedListener.class.getSimpleName() + "() instead");
     }
 
     /**
@@ -187,6 +230,35 @@ public class PlacesAutocompleteTextView extends AutoCompleteTextView {
      */
     public void setOnPlaceSelectedListener(@Nullable OnPlaceSelectedListener listener) {
         this.listener = listener;
+    }
+
+    /**
+     * Override the default Clear image and add your own
+     */
+    public void setImgClearButton(Drawable imgClearButton) {
+        this.imgClearButton = imgClearButton;
+        enableClearButton();
+    }
+
+    /**
+     * Override the clear listener like what should happen when the X is pressed
+     */
+    public void setOnClearListener(final OnClearListener clearListener) {
+        this.onClearListener = clearListener;
+    }
+
+    /**
+     * hide the the clear button
+     */
+    public void hideClearButton() {
+        this.setCompoundDrawables(null, null, null, null);
+    }
+
+    /**
+     * Show the the clear button
+     */
+    public void showClearButton() {
+        enableClearButton();
     }
 
     /**

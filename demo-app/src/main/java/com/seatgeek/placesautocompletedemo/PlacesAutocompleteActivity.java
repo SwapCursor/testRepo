@@ -3,10 +3,9 @@ package com.seatgeek.placesautocompletedemo;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.AdapterView;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.seatgeek.placesautocomplete.DetailsCallback;
 import com.seatgeek.placesautocomplete.OnPlaceSelectedListener;
@@ -16,24 +15,24 @@ import com.seatgeek.placesautocomplete.model.AddressComponentType;
 import com.seatgeek.placesautocomplete.model.Place;
 import com.seatgeek.placesautocomplete.model.PlaceDetails;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
 
 public class PlacesAutocompleteActivity extends Activity {
 
-    @InjectView(R.id.autocomplete)
+    @BindView(R.id.autocomplete)
     PlacesAutocompleteTextView mAutocomplete;
 
-    @InjectView(R.id.street)
+    @BindView(R.id.street)
     TextView mStreet;
 
-    @InjectView(R.id.city)
+    @BindView(R.id.city)
     TextView mCity;
 
-    @InjectView(R.id.state)
+    @BindView(R.id.state)
     TextView mState;
 
-    @InjectView(R.id.zip)
+    @BindView(R.id.zip)
     TextView mZip;
 
     @Override
@@ -41,18 +40,7 @@ public class PlacesAutocompleteActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_places_autocomplete);
-        ButterKnife.inject(this);
-        mAutocomplete.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // OnItemClickListener will fire when user select and address.
-                // Useful if you want immediate action like start a progress dialog
-                // after user select address.
-                Toast.makeText(PlacesAutocompleteActivity.this,
-                        "onItemClick starting progress dialog", Toast.LENGTH_SHORT).show();
-            }
-        });
-
+        ButterKnife.bind(this);
         mAutocomplete.setOnPlaceSelectedListener(new OnPlaceSelectedListener() {
             @Override
             public void onPlaceSelected(final Place place) {
@@ -101,5 +89,21 @@ public class PlacesAutocompleteActivity extends Activity {
                 });
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_hide_x)
+            mAutocomplete.hideClearButton();
+        if (id == R.id.action_show_x)
+            mAutocomplete.showClearButton();
+        return super.onOptionsItemSelected(item);
     }
 }
