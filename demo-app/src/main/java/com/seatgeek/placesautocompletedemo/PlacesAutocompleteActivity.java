@@ -1,7 +1,7 @@
 package com.seatgeek.placesautocompletedemo;
 
-import android.app.Activity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,7 +18,7 @@ import com.seatgeek.placesautocomplete.model.PlaceDetails;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class PlacesAutocompleteActivity extends Activity {
+public class PlacesAutocompleteActivity extends AppCompatActivity {
 
     @BindView(R.id.autocomplete)
     PlacesAutocompleteTextView mAutocomplete;

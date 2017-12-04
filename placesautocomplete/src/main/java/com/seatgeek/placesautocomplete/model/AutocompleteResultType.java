@@ -15,11 +15,16 @@ public enum AutocompleteResultType {
     /**
      * Any location represented by a full postal address that is a business establishment
      */
-    ESTABLISHMENT("establishment");
+    ESTABLISHMENT("establishment"),
+    /**
+     * Any location or establishment
+     */
+    NO_TYPE("no_type");
+
 
     private final String queryParam;
 
-   AutocompleteResultType(final String queryParam) {
+    AutocompleteResultType(final String queryParam) {
         this.queryParam = queryParam;
     }
 
