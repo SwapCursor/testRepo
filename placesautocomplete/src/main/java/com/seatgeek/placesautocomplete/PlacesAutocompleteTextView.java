@@ -41,6 +41,7 @@ public class PlacesAutocompleteTextView extends AppCompatAutoCompleteTextView {
     @Nullable
     private AutocompleteResultType resultType;
 
+    @NonNull
     private PlacesApi api;
 
     @Nullable
@@ -49,6 +50,7 @@ public class PlacesAutocompleteTextView extends AppCompatAutoCompleteTextView {
     @Nullable
     private AutocompleteHistoryManager historyManager;
 
+    @NonNull
     private AbstractPlacesAutocompleteAdapter adapter;
 
     @Nullable
@@ -510,24 +512,5 @@ public class PlacesAutocompleteTextView extends AppCompatAutoCompleteTextView {
     public void setLanguageCode(@Nullable String languageCode) {
         this.languageCode = languageCode;
         api.setLanguageCode(this.languageCode);
-    }
-
-    // Copied from TextInputEditText to ensure extract mode hint works
-    @Override
-    public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
-        final InputConnection ic = super.onCreateInputConnection(outAttrs);
-        if (ic != null && outAttrs.hintText == null) {
-            // If we don't have a hint and our parent is a TextInputLayout, use it's hint for the
-            // EditorInfo. This allows us to display a hint in 'extract mode'.
-            ViewParent parent = getParent();
-            while (parent instanceof View) {
-                if (parent instanceof TextInputLayout) {
-                    outAttrs.hintText = ((TextInputLayout) parent).getHint();
-                    break;
-                }
-                parent = parent.getParent();
-            }
-        }
-        return ic;
     }
 }
